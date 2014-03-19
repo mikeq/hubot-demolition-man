@@ -54,8 +54,8 @@ module.exports = (robot) ->
     key = moment().format('YYYYMMDD')
     user = msg.message.user.name
 
-    logMe = new Logger robot
-    logMe.add user, credit
+    log = new Logger robot
+    log.add user, credit
 
     if robot.brain.violation[user][key]
       warn = user + ", you have been fined " + robot.brain.violation[user][key] + " credits today"
@@ -65,19 +65,19 @@ class Logger
 
   constructor: (robot) ->
     robot.brain.violation ?= {}
-    @theBrain = robot.brain
+    @brain = robot.brain
 
     add: (user, credits, dateKey) ->
       dateKey ?= moment().format('YYYYMMDD')
 
       try
-        if not @theBrain.violation[user]
-          @theBrain.violation[user] = {}
-          @theBrain.violation[user][dateKey] = credits
+        if not @brain.violation[user]
+          @brain.violation[user] = {}
+          @brain.violation[user][dateKey] = credits
         else
-          if not @theBrain.violation[user][dateKey]
-            @theBrain.violation[user][dateKey] = credits
+          if not @brain.violation[user][dateKey]
+            @brain.violation[user][dateKey] = credits
           else
-            @theBrain.violation[user][dateKey] += credits
+            @brain.violation[user][dateKey] += credits
       catch error
         console.log error
