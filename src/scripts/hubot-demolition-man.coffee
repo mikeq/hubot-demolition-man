@@ -11,13 +11,12 @@
 #
 # Author:
 #   whitman, jan0sch
+
 moment = require 'moment'
 
 module.exports = (robot) ->
 
   words = [
-    'arsch',
-    'arschloch',
     'arse',
     'ass',
     'bastard',
@@ -29,23 +28,19 @@ module.exports = (robot) ->
     'cunt',
     'damn',
     'damnit',
-    'depp',
     'dick',
     'douche',
     'fag',
-    'fotze',
+    'fanny',
     'fuck',
     'fucked',
     'fucking',
-    'kacke',
+    'prick',
     'piss',
-    'pisse',
-    'scheisse',
-    'schlampe',
     'shit',
-    'wank',
-    'wichser'
+    'wank'
   ]
+
   regex = new RegExp("\\b(#{words.join('|')})\\b", 'ig')
 
   robot.hear regex, (msg) ->
@@ -58,8 +53,8 @@ module.exports = (robot) ->
     log.add user, credit
 
     if robot.brain.violation[user][key]
-      warn = user + ", you have been fined " + robot.brain.violation[user][key] + " credits today"
-      msg.send 'You have been fined ' + credit + ' credit(s) for a violation of the verbal morality statute. ('+warn+')'
+      warn = "#{user}, you are fined #{robot.brain.violation[user][key]} credits today"
+      msg.send "You are fined #{credit} credit#{['s' if credit > 1]} for a violation of the Verbal Morality Statute. (#{warn})"
 
 class Logger
 
@@ -67,17 +62,17 @@ class Logger
     robot.brain.violation ?= {}
     @brain = robot.brain
 
-    add: (user, credits, dateKey) ->
-      dateKey ?= moment().format('YYYYMMDD')
+  add: (user, credits, date) ->
+    date ?= moment().format('YYYYMMDD')
 
-      try
-        if not @brain.violation[user]
-          @brain.violation[user] = {}
-          @brain.violation[user][dateKey] = credits
+    try
+      if not @brain.violation[user]
+        @brain.violation[user] = {}
+        @brain.violation[user][date] = credits
+      else
+        if not @brain.violation[user][date]
+          @brain.violation[user][date] = credits
         else
-          if not @brain.violation[user][dateKey]
-            @brain.violation[user][dateKey] = credits
-          else
-            @brain.violation[user][dateKey] += credits
-      catch error
-        console.log error
+          @brain.violation[user][date] += credits
+    catch error
+      console.log error
