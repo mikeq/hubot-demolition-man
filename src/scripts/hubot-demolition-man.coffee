@@ -45,34 +45,28 @@ module.exports = (robot) ->
 
   robot.hear regex, (msg) ->
     credit = msg.message.text.match(regex).length
-
-    key = moment().format('YYYYMMDD')
     user = msg.message.user.name
 
-    log = new Logger robot
-    log.add user, credit
+    new Logger user, credit
+    violation = robot.brain.violation
 
-    if robot.brain.violation[user][key]
-      warn = "#{user}, you are fined #{robot.brain.violation[user][key]} credits today"
-      msg.send "You are fined #{credit} credit#{['s' if credit > 1]} for a violation of the Verbal Morality Statute. (#{warn})"
+    msg.send "You are fined #{credit} credit#{['s' if credit > 1]} for a
+ violation of the Verbal Morality Statute. (#{user}, you've been fined
+ #{violation[user][moment().format('YYYYMMDD')]} credits today)"
 
-class Logger
+    timestamp = violation[user]['time'] if violation[user]['time']
 
-  constructor: (robot) ->
-    robot.brain.violation ?= {}
-    @brain = robot.brain
+    if timestamp and moment().diff(timestamp, 'seconds') < 5
+      msg.send "Your repeated violation of the Verbal Morality Statute has
+ caused me to notify the San Angeles Police Department. Please remain
+ where you are for your reprimand."
 
-  add: (user, credits, date) ->
-    date ?= moment().format('YYYYMMDD')
+    violation[user]['time'] = moment()
 
-    try
-      if not @brain.violation[user]
-        @brain.violation[user] = {}
-        @brain.violation[user][date] = credits
-      else
-        if not @brain.violation[user][date]
-          @brain.violation[user][date] = credits
-        else
-          @brain.violation[user][date] += credits
-    catch error
-      console.log error
+  class Logger
+    constructor: (user, credits) ->
+      date = moment().format('YYYYMMDD')
+      @violation = robot.brain.violation ?= {}
+      @violation[user] ?= {}
+      @violation[user][date] ?= 0
+      @violation[user][date] += credits
