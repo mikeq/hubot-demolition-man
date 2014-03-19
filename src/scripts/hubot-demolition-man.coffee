@@ -53,33 +53,31 @@ module.exports = (robot) ->
 
     key = moment().format('YYYYMMDD')
     user = msg.message.user.name
+
     logMe = new Logger robot
     logMe.add user, credit
 
     if robot.brain.violation[user][key]
-        warn = user + ", you have been fined " + robot.brain.violation[user][key] + " credits today"
-        msg.send 'You have been fined ' + credit + ' credit(s) for a violation of the verbal morality statute. ('+warn+')'
-    else
-        return false
+      warn = user + ", you have been fined " + robot.brain.violation[user][key] + " credits today"
+      msg.send 'You have been fined ' + credit + ' credit(s) for a violation of the verbal morality statute. ('+warn+')'
 
 class Logger
-    constructor: (robot) ->
-        robot.brain.violation ?= {}
-        @theBrain = robot.brain
+
+  constructor: (robot) ->
+    robot.brain.violation ?= {}
+    @theBrain = robot.brain
 
     add: (user, credits, dateKey) ->
-        dateKey ?= moment().format('YYYYMMDD')
+      dateKey ?= moment().format('YYYYMMDD')
 
-        try
-            if not @theBrain.violation[user]
-                @theBrain.violation[user] = {}
-                @theBrain.violation[user][dateKey] = credits
-            else
-                if not @theBrain.violation[user][dateKey]
-                    @theBrain.violation[user][dateKey] = credits
-                else
-                    @theBrain.violation[user][dateKey] += credits
-        catch error
-            console.log error
-
-        true
+      try
+        if not @theBrain.violation[user]
+          @theBrain.violation[user] = {}
+          @theBrain.violation[user][dateKey] = credits
+        else
+          if not @theBrain.violation[user][dateKey]
+            @theBrain.violation[user][dateKey] = credits
+          else
+            @theBrain.violation[user][dateKey] += credits
+      catch error
+        console.log error
