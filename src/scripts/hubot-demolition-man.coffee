@@ -56,23 +56,23 @@ module.exports = (robot) ->
       warn = "#{user}, you are fined #{robot.brain.violation[user][key]} credits today"
       msg.send "You are fined #{credit} credit#{['s' if credit > 1]} for a violation of the Verbal Morality Statute. (#{warn})"
 
-class Logger
+  class Logger
 
-  constructor: (robot) ->
-    robot.brain.violation ?= {}
-    @brain = robot.brain
+    constructor: (robot) ->
+      robot.brain.violation ?= {}
+      @brain = robot.brain
 
-  add: (user, credits, date) ->
-    date ?= moment().format('YYYYMMDD')
+    add: (user, credits, date) ->
+      date ?= moment().format('YYYYMMDD')
 
-    try
-      if not @brain.violation[user]
-        @brain.violation[user] = {}
-        @brain.violation[user][date] = credits
-      else
-        if not @brain.violation[user][date]
+      try
+        if not @brain.violation[user]
+          @brain.violation[user] = {}
           @brain.violation[user][date] = credits
         else
-          @brain.violation[user][date] += credits
-    catch error
-      console.log error
+          if not @brain.violation[user][date]
+            @brain.violation[user][date] = credits
+          else
+            @brain.violation[user][date] += credits
+      catch error
+        console.log error
