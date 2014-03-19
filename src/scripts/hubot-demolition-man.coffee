@@ -46,7 +46,7 @@ module.exports = (robot) ->
     'wank',
     'wichser'
   ]
-  regex = new RegExp("\\b(#{words.join('|')})\\b", 'ig');
+  regex = new RegExp("\\b(#{words.join('|')})\\b", 'ig')
 
   robot.hear regex, (msg) ->
     credit = msg.message.text.match(regex).length
